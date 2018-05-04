@@ -1,0 +1,4 @@
+app-backend/vendor/*
+app-frontend/npm_modules/*
+devops/docker/db*
+local/docker/db*

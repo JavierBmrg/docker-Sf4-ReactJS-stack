@@ -1,0 +1,4 @@
+FROM nginx:1.13-alpine
+
+COPY ./devops/docker/api/nginx/conf.d /etc/nginx/conf.d/
+COPY ./app-back/public /srv/api/public
