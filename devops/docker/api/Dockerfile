@@ -47,8 +47,8 @@ ARG SYMFONY_SKIP_REGISTRATION=1
 ARG APP_ENV=dev
 
 # Prevent the reinstallation of vendors at every changes in the source code
-COPY ./app-back/composer.json ./
-COPY ./app-back/composer.lock ./
+COPY ./app-backend/composer.json ./
+COPY ./app-backend/composer.lock ./
 RUN composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress --no-suggest \
 	&& composer clear-cache
 

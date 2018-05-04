@@ -8,8 +8,8 @@ WORKDIR /var/srv/app
 ENV PATH /var/srv/app/node_modules/.bin:$PATH
 
 # Copy dependencies files
-COPY ./app-front/package*.json ./
-COPY ./app-front/yarn.lock ./
+COPY ./app-frontend/package*.json ./
+COPY ./app-frontend/yarn.lock ./
 
 # To be defined!
 RUN yarn install

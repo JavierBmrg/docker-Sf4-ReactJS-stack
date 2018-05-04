@@ -6,7 +6,7 @@ networks:
 
 services:
   app-client:
-    container_name: ${PROJECT_NAME}-${FRONT_TECH}
+    container_name: ${PROJECT_NAME}-${FRONTEND_TECH}
     restart: always
     build:
       context:  ../
@@ -38,7 +38,7 @@ services:
       - ../app-backend:/srv/api:rw
 
   api-nginx:
-    container_name: ${PROJECT_NAME}-${BACK_TECH}
+    container_name: ${PROJECT_NAME}-${BACKEND_TECH}
     restart: always
     build:
       context: ../

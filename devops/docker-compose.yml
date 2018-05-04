@@ -6,7 +6,7 @@ networks:
 
 services:
   app-client:
-    container_name: ${PROJECT_NAME}-${FRONT_TECH}
+    container_name: ${PROJECT_NAME}-${FRONTEND_TECH}
     restart: always
     build:
       context:  ../
@@ -16,7 +16,7 @@ services:
     ports:
       - "${REACT_HOST_HTTP_PORT}:3000"
     volumes:
-      - '../app-front/:/var/srv/app'
+      - '../app-frontend/:/var/srv/app'
       - '/var/srv/app/node_modules'
     environment: 
       - NODE_ENV=development
@@ -33,9 +33,9 @@ services:
       - db
     # Change those values with the name of the project backend directory
     env_file:
-      - ../app-back/.env    
+      - ../app-backend/.env    
     volumes:
-      - ../app-back:/srv/api:rw
+      - ../app-backend:/srv/api:rw
 
   api-nginx:
     container_name: ${PROJECT_NAME}-${BACK_TECH}
@@ -48,7 +48,7 @@ services:
     depends_on:
       - php-backend
     volumes:
-      - ../app-back/public:/srv/api/public:ro
+      - ../app-backend/public:/srv/api/public:ro
     ports:
       - "${SF4_HOST_HTTP_PORT}:80"
 
