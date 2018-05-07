@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
 #Author: Edward Fernández B
-#Description: Script to clone project code and setup all enviroments (front/back) 
-#             with docker-engine and docker-compose binaries.
+#Date: 02/05/2018
+'''Description:
+   Script to clone project code and setup all enviroments (frontend/backend) 
+   with docker-engine and docker-compose binaries.
+'''                        
 
 # Steps: 
 # 1- Clone this project
@@ -12,7 +15,7 @@
 # Clone frontend and backend repositories in current directory and rename them with app-backend and app-frontend
 # Execute docker-compose to setup docker environment
 
-
+readonly FLAGS=$1;
 readonly RUN_DIRECTORY="local"
 readonly DATE_TIME=`date +%Y%m%d_%H:%M`;
 readonly LOG_FILE=$( echo $0 | cut -d'/' -f2 | head -c 13 ; echo _$DATE_TIME.log );
@@ -42,21 +45,41 @@ exceptions()
   unBlockProcess;
 }
 
+containersUp()
+{
+  local _dockerEngineBinary=$(which docker);
+  local _dockerComposeBinary=$(which docker-compose);
+
+  if [ "$FLAGS" == "devops" ];then
+    $RUN_DIRECTORY="devops";
+    echo "Executing as devop mode."
+  fi
+
+  if [ -z $_dockerEngineBinary ] || [ -z $_dockerComposeBinary ];then
+    exceptions "Please, install docker and docker-compose in your system." 1; exit 1;
+  fi
+  
+  cd $RUN_DIRECTORY && $_dockerComposeBinary up -d --build ; cd ..
+
+}
+
 verifyIfExistDevDirs()
 {
-  find . 2>&1 -type d -name 'app-*' | grep -v 'find:';
+  find . 2>&1 -type d -name 'app-*' | grep -v 'find:' > /dev/null;
   _result=$?;
 
   if [ "$_result" -eq 0 ];then
-    exceptions "Backend and Frontend directories already exists." 1; exit 1;
+   return 0;
   fi
+
+  return 1;
 }
 
 cloneFrontEndAndBackEnd()
 {
   local _frontend_directory="app-frontend";
   local _backend_directory="app-backend";
-  local _mvBinary=$(which mv);  
+  local _cpBinary=$(which cp);  
 
   verifyIfExistDevDirs;
 
@@ -66,7 +89,7 @@ cloneFrontEndAndBackEnd()
     exceptions "There was a problem related repositories clone tasks" 1; exit 1;
   fi
 
-  $_mvBinary $_backend_directory/.env.dist $_backend_directory/.env
+  $_cpBinary $_backend_directory/.env.dist $_backend_directory/.env
   
   return 0;
   
@@ -78,7 +101,7 @@ clone()
 
   case $? in
     0)
-      cloneFrontEndAndBackEnd $_binary;      
+      cloneFrontEndAndBackEnd $_binary;
       ;;
     1)
       exceptions "Please, install GIT package in your system." 1; exit 1;
@@ -88,24 +111,19 @@ clone()
 
 }
 
-containersUp()
-{
-  local _dockerEngineBinary=$(which docker);
-  local _dockerComposeBinary=$(which docker-compose);
-
-  if [ -z $_dockerEngineBinary ] || [ -z $_dockerComposeBinary ];then
-    exceptions "Please, install docker and docker-compose in your system." 1; exit 1;
-  fi
-  
-  cd $RUN_DIRECTORY && $_dockerComposeBinary up -d --build && cd ..
-
-}
-
 
 run()
 {  
   blockProcess;
-  clone && containersUp;
+  verifyIfExistDevDirs;
+  case $? in
+    0)
+      containersUp;
+      ;;
+    1)
+      clone && containersUp;
+      ;;
+  esac  
   unBlockProcess;
 }
 
