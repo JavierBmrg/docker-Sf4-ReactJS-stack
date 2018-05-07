@@ -5,6 +5,8 @@ FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION}
 RUN apk add --no-cache \
 		git
 
+RUN apk add --no-cache openssl
+
 ARG APCU_VERSION=5.1.11
 RUN set -xe \
 	&& apk add --no-cache --virtual .build-deps \
@@ -54,12 +56,17 @@ RUN composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-pr
 
 COPY ./app-backend ./
 
+RUN mkdir -p config/jwt/keys \
+	&& openssl genrsa -des3 -passout pass:NotSecure123 -out ./config/jwt/keys/private.pem -aes256 4096 \
+	&& openssl rsa -passin pass:NotSecure123 -in ./config/jwt/keys/private.pem -out ./config/jwt/keys/public.pem
+
 RUN mkdir -p var/cache var/log var/sessions \
 	&& composer dump-autoload --classmap-authoritative --no-dev \
-	&& composer run-script --no-dev post-install-cmd \
+	#&& composer run-script --no-dev post-install-cmd \
 	&& chmod +x bin/console && sync \
 	&& chown -R www-data var
 VOLUME /srv/api/var
+
 
 COPY ./local/docker/api/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint

@@ -2,10 +2,10 @@
 
 #Author: Edward Fernández B
 #Date: 02/05/2018
-'''Description:
-   Script to clone project code and setup all enviroments (frontend/backend) 
-   with docker-engine and docker-compose binaries.
-'''                        
+# Description:
+#   Script to clone project code and setup all enviroments (frontend/backend) 
+#   with docker-engine and docker-compose binaries.
+                        
 
 # Steps: 
 # 1- Clone this project
