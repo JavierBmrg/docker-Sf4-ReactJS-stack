@@ -56,10 +56,6 @@ RUN composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-pr
 
 COPY ./app-backend ./
 
-RUN mkdir -p config/jwt/keys \
-	&& openssl genrsa -des3 -passout pass:NotSecure123 -out ./config/jwt/keys/private.pem -aes256 4096 \
-	&& openssl rsa -passin pass:NotSecure123 -in ./config/jwt/keys/private.pem -out ./config/jwt/keys/public.pem
-
 RUN mkdir -p var/cache var/log var/sessions \
 	&& composer dump-autoload --classmap-authoritative --no-dev \
 	#&& composer run-script --no-dev post-install-cmd \
