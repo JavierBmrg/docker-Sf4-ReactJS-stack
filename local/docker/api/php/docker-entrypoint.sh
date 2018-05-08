@@ -6,6 +6,10 @@ if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm "$@"
 fi
 
+	openssl genrsa -des3 -passout pass:NotSecure123 -out ./config/jwt/private.pem -aes256 4096 \
+	&& openssl rsa -passin pass:NotSecure123 -in ./config/jwt/private.pem -out ./config/jwt/public.pem \
+	&& chmod -R 775 config/jwt
+
 if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
 	mkdir -p var/cache var/log var/sessions
 
