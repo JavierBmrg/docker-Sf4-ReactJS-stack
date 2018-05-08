@@ -21,6 +21,18 @@ services:
     environment: 
       - NODE_ENV=development
 
+  app-client-nginx:
+    container_name: ${PROJECT_NAME}-${FRONT_NGINX}
+    build:
+      context:  ../
+      dockerfile: ./local/docker/client/files/Dockerfile.nginx
+    networks: 
+      - app-network
+    depends_on:
+      - app-client
+    ports: 
+      - "${CLIENT_SSL_PORT}:443"
+
   php-backend:
     container_name: ${PROJECT_NAME}-phpfpm
     restart: always

@@ -1,0 +1,18 @@
+FROM alpine:latest
+
+RUN apk add --no-cache openssl
+
+RUN openssl genrsa -des3 -passout pass:NotSecureClient123 -out cert.pass.key 2048
+RUN openssl rsa -passin pass:NotSecureClient123 -in cert.pass.key -out cert.key
+RUN rm cert.pass.key
+RUN openssl req -new -passout pass:NotSecureClient123 -key cert.key -out cert.csr \
+    -subj '/C=SS/ST=SS/L=Caracas City/O=Diocesan Dev/CN=localhost'
+RUN openssl x509 -req -sha256 -days 365 -in cert.csr -signkey cert.key -out cert.crt
+
+FROM nginx:1.13-alpine
+
+RUN mkdir -p /etc/nginx/ssl/
+WORKDIR /etc/nginx/
+
+COPY --from=0 cert.key cert.crt ./ssl/
+COPY ./local/docker/client/files/conf.d ./conf.d/
